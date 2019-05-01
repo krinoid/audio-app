@@ -102,7 +102,7 @@ By default, the API will be available at: `http://localhost:3001/api/v1/`.
 ## Tools
 
 - eslint & prettier -- maintain code style and formatting
-- PotgreSQL -- preferred database I'm familiar with
+- PostgreSQL -- preferred database I'm familiar with
 - Docker -- easy way for runing Postgres locally
 - knex.js -- query builder I'm familiar with & nice migration and seed CLI
 
