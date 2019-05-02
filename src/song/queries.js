@@ -18,6 +18,16 @@ const expandArtist = (queryBuilder, foreignKey) => {
     .select(expandedArtistColumns);
 };
 
+const expandedGenreColumns = [
+  'genre.id as genre_id',
+  'genre.name as genre_name',
+];
+const expandGenre = (queryBuilder, foreignKey) => {
+  queryBuilder
+    .leftJoin('genre', foreignKey, 'genre.id')
+    .select(expandedGenreColumns);
+};
+
 const formatExpandedSong = data => ({
   id: data.id,
   title: data.title,
@@ -28,6 +38,10 @@ const formatExpandedSong = data => ({
   artist: {
     id: data.artist_id,
     name: data.artist_name,
+  },
+  genre: {
+    id: data.genre_id,
+    name: data.genre_name,
   },
 });
 
@@ -42,8 +56,9 @@ const getSongsQuery = ({ db, limit, offset, expand }) => {
   if (expand) {
     return db('song')
       .select(expandedSongColumns)
-      .modify(expandAlbum, 'song.album_id')
+      .modify(expandAlbum, 'genre_id')
       .modify(expandArtist, 'album.artist_id')
+      .modify(expandGenre, 'genre_id')
       .offset(offset)
       .limit(limit)
       .then(list => list.map(formatExpandedSong));
@@ -62,6 +77,7 @@ const getSongQuery = ({ db, id, expand }) => {
       .select(expandedSongColumns)
       .modify(expandAlbum, 'song.album_id')
       .modify(expandArtist, 'album.artist_id')
+      .modify(expandGenre, 'genre_id')
       .then(list => list.map(formatExpandedSong));
   }
   return db('song')
