@@ -1,5 +1,8 @@
+const path = require('path');
+const contentDisposition = require('content-disposition');
 const express = require('express');
 const bodyParser = require('body-parser');
+const serveStatic = require('serve-static');
 
 const {
   developmentErrors,
@@ -17,11 +20,24 @@ const dbMiddleware = db => {
   };
 };
 
+// set header to force download
+function setDownloadsHeaders(res, contentPath) {
+  res.setHeader('Content-Disposition', contentDisposition(contentPath));
+}
+
 function startServer({ port, prefix, db }) {
   const app = express();
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+
+  // static files serving config
+  app.use(
+    serveStatic(path.join(__dirname, '../public/songs'), {
+      index: false,
+      setHeaders: setDownloadsHeaders,
+    })
+  );
 
   app.use(dbMiddleware(db));
   app.use(prefix, apiRouter);
